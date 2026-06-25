@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clera — the CRM that chases your clients for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1B1B;
+    --ink-soft:#16302E;
+    --paper:#F6F7F4;
+    --surface:#FFFFFF;
+    --jade:#15A37A;
+    --jade-deep:#0E7D5E;
+    --amber:#D8923A;
+    --amber-soft:#F4E4CC;
+    --line:#DDE3DD;
+    --muted:#5C6B66;
+    --display:'Bricolage Grotesque', sans-serif;
+    --body:'Hanken Grotesk', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+    --maxw:1140px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  /* eyebrow / labels */
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--jade-deep);
+    font-weight:500;
+  }
+
+  /* buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--body);font-weight:600;font-size:15px;
+    padding:13px 22px;border-radius:10px;cursor:pointer;border:1px solid transparent;
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{background:var(--jade);color:#fff}
+  .btn-primary:hover{background:var(--jade-deep);transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(14,125,94,.6)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .btn:focus-visible{outline:3px solid var(--jade);outline-offset:2px}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:50;background:rgba(246,247,244,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--jade);box-shadow:0 0 0 4px rgba(21,163,122,.18)}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-links a{font-size:15px;color:var(--muted);font-weight:500}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+  .menu-toggle{display:none}
+
+  /* hero */
+  .hero{padding:72px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .hero h1{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(40px,5.6vw,64px);line-height:1.02;letter-spacing:-.025em;
+    margin:18px 0 22px;
+  }
+  .hero h1 .accent{color:var(--jade-deep)}
+  .hero p.lead{font-size:19px;color:var(--ink-soft);max-width:30ch;margin-bottom:30px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-note{margin-top:20px;font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.02em}
+
+  /* signature panel */
+  .panel{
+    background:var(--surface);border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 30px 60px -38px rgba(14,27,27,.45);
+    overflow:hidden;
+  }
+  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .panel-head .title{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--muted)}
+  .panel-head .count{font-family:var(--display);font-weight:700;font-size:15px}
+  .panel-head .count b{color:var(--amber)}
+  .panel-head .count i{font-style:normal;color:var(--jade-deep)}
+  .rows{padding:8px 10px}
+  .row{
+    display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+    padding:13px 12px;border-radius:11px;transition:background .4s ease;
+  }
+  .row + .row{border-top:1px solid #EEF1ED}
+  .row.flash{background:rgba(21,163,122,.08);border-top-color:transparent}
+  .row .who{font-weight:600;font-size:14.5px}
+  .row .what{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.01em;margin-top:2px}
+  .chip{
+    font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;
+    padding:6px 11px;border-radius:999px;white-space:nowrap;transition:all .4s ease;
+  }
+  .chip.outstanding{background:var(--amber-soft);color:#9a5f12}
+  .chip.chasing{background:#E7EFF0;color:#3a5b5e}
+  .chip.received{background:rgba(21,163,122,.14);color:var(--jade-deep)}
+  .panel-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted)}
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--jade);position:relative}
+  .pulse::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--jade);animation:pulse 2s ease-out infinite}
+  @keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(3.2);opacity:0}}
+
+  /* trust strip */
+  .trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--surface)}
+  .trust .wrap{display:flex;flex-wrap:wrap;gap:14px 34px;align-items:center;justify-content:center;padding:18px 24px}
+  .trust span{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .trust .sep{color:var(--line)}
+
+  /* sections */
+  section{padding:88px 0}
+  .sec-head{max-width:60ch;margin-bottom:48px}
+  .sec-head h2{font-family:var(--display);font-weight:700;font-size:clamp(30px,4vw,42px);letter-spacing:-.02em;line-height:1.08;margin:14px 0 14px}
+  .sec-head p{font-size:18px;color:var(--muted)}
+
+  /* features */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .feat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:30px 26px;transition:transform .18s ease, box-shadow .18s ease}
+  .feat:hover{transform:translateY(-4px);box-shadow:0 22px 44px -30px rgba(14,27,27,.4)}
+  .feat .num{font-family:var(--mono);font-size:12px;color:var(--jade-deep);letter-spacing:.1em}
+  .feat h3{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.01em;margin:16px 0 10px}
+  .feat p{color:var(--muted);font-size:15px}
+
+  /* pricing */
+  #pricing{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+  .card{
+    border:1px solid var(--line);border-radius:18px;padding:32px 28px;background:var(--paper);
+    display:flex;flex-direction:column;position:relative;
+  }
+  .card.featured{background:var(--ink);color:#EAF1EE;border-color:var(--ink);transform:scale(1.015)}
+  .card.featured .price,.card.featured h3{color:#fff}
+  .card.featured .muted{color:#9FB4AE}
+  .badge{position:absolute;top:-12px;right:24px;background:var(--jade);color:#fff;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
+  .card h3{font-family:var(--display);font-weight:700;font-size:20px;margin-bottom:6px}
+  .card .who{font-size:14px;color:var(--muted);margin-bottom:20px;min-height:20px}
+  .card .price{font-family:var(--display);font-weight:800;font-size:46px;letter-spacing:-.03em;line-height:1}
+  .card .price small{font-family:var(--body);font-size:15px;font-weight:500;color:var(--muted);letter-spacing:0}
+  .card.featured .price small{color:#9FB4AE}
+  .card ul{list-style:none;margin:24px 0 28px;display:flex;flex-direction:column;gap:12px}
+  .card li{display:flex;gap:10px;font-size:14.5px;align-items:flex-start}
+  .card li svg{flex:0 0 auto;margin-top:3px}
+  .card .btn{width:100%;justify-content:center;margin-top:auto}
+  .card.featured .btn-ghost{border-color:rgba(255,255,255,.3);color:#fff}
+  .card.featured .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+  .annual{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:26px;letter-spacing:.03em}
+
+  /* bespoke */
+  .bespoke-inner{background:var(--ink);border-radius:24px;padding:60px 56px;color:#EAF1EE;display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+  .bespoke-inner .eyebrow{color:#7FD9BC}
+  .bespoke-inner h2{font-family:var(--display);font-weight:700;color:#fff;font-size:clamp(28px,3.4vw,38px);letter-spacing:-.02em;line-height:1.1;margin:14px 0 18px}
+  .bespoke-inner p{color:#A9C0BA;font-size:17px;margin-bottom:26px}
+  .bespoke-list{display:flex;flex-direction:column;gap:16px}
+  .bespoke-list .item{display:flex;gap:14px;align-items:flex-start}
+  .bespoke-list .k{font-family:var(--mono);font-size:12px;color:#7FD9BC;letter-spacing:.05em;flex:0 0 86px;padding-top:3px}
+  .bespoke-list .v{font-size:15px;color:#DCE8E4}
+  .bespoke-list .v b{color:#fff}
+
+  /* final cta */
+  .final{text-align:center}
+  .final h2{font-family:var(--display);font-weight:700;font-size:clamp(32px,4.4vw,50px);letter-spacing:-.025em;line-height:1.05;max-width:18ch;margin:0 auto 18px}
+  .final p{font-size:18px;color:var(--muted);margin-bottom:30px}
+  .final .hero-cta{justify-content:center}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:40px 0;background:var(--surface)}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
+  footer .brand{font-size:18px}
+  footer .fnote{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+  /* time saved + calculator */
+  .saved-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+  .saved-copy h2{font-family:var(--display);font-weight:700;font-size:clamp(30px,4vw,42px);letter-spacing:-.02em;line-height:1.08;margin:14px 0 16px}
+  .saved-copy p{font-size:18px;color:var(--muted);max-width:42ch}
+  .calc{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:30px 30px 26px;box-shadow:0 30px 60px -38px rgba(14,27,27,.4)}
+  .calc .field{margin-bottom:22px}
+  .calc label{display:flex;justify-content:space-between;align-items:baseline;font-size:14.5px;font-weight:600;margin-bottom:11px;gap:14px}
+  .calc label span{font-family:var(--mono);font-size:13px;color:var(--jade-deep);font-weight:500}
+  .calc input[type=range]{width:100%;height:6px;accent-color:var(--jade);cursor:pointer}
+  .calc input[type=range]:focus-visible{outline:3px solid var(--jade);outline-offset:4px}
+  .calc .result{margin-top:24px;padding-top:24px;border-top:1px solid var(--line);display:flex;gap:36px}
+  .calc .big{font-family:var(--display);font-weight:800;font-size:40px;letter-spacing:-.03em;line-height:1;color:var(--jade-deep)}
+  .calc .lbl{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-top:8px}
+  .calc .payoff{margin-top:18px;font-size:14px;color:var(--ink-soft);font-weight:600}
+  .calc .assume{margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.02em}
+
+  /* placeholder slots */
+  .placeholder{border:1.5px dashed var(--line);border-radius:18px;padding:54px 24px;text-align:center;background:var(--surface)}
+  .placeholder .eyebrow{display:block;margin-bottom:12px}
+  .placeholder p{font-size:15px;color:var(--muted);max-width:48ch;margin:0 auto}
+
+  /* faq */
+  .faq{max-width:760px;margin:0 auto}
+  .faq details{border:1px solid var(--line);border-radius:13px;background:var(--surface);margin-bottom:12px;overflow:hidden}
+  .faq summary{list-style:none;cursor:pointer;padding:20px 22px;font-family:var(--display);font-weight:600;font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary:focus-visible{outline:3px solid var(--jade);outline-offset:-3px}
+  .faq .ic{flex:0 0 auto;color:var(--jade-deep);font-family:var(--mono);font-weight:400;font-size:20px;transition:transform .2s ease}
+  .faq details[open] .ic{transform:rotate(45deg)}
+  .faq .a{padding:0 22px 20px;color:var(--muted);font-size:15px;max-width:62ch}
+
+  /* waitlist modal */
+  .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(14,27,27,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .2s ease}
+  .modal-overlay.open{opacity:1}
+  .modal-overlay[hidden]{display:none}
+  .modal-card{background:var(--surface);border-radius:20px;max-width:440px;width:100%;padding:34px 32px;position:relative;box-shadow:0 40px 80px -30px rgba(14,27,27,.6);transform:translateY(10px);transition:transform .2s ease}
+  .modal-overlay.open .modal-card{transform:translateY(0)}
+  .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:26px;line-height:1;color:var(--muted);cursor:pointer;width:34px;height:34px;border-radius:8px}
+  .modal-close:hover{background:var(--paper);color:var(--ink)}
+  .modal-close:focus-visible{outline:3px solid var(--jade);outline-offset:2px}
+  .modal-card h3{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.02em;margin:12px 0 8px}
+  .modal-sub{font-size:14.5px;color:var(--muted);margin-bottom:22px}
+  .modal-field{margin-bottom:16px}
+  .modal-field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+  .modal-field .opt{color:var(--muted);font-weight:400}
+  .modal-field input,.modal-field select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-family:var(--body);font-size:15px;background:var(--paper);color:var(--ink)}
+  .modal-field input:focus,.modal-field select:focus{outline:none;border-color:var(--jade);box-shadow:0 0 0 3px rgba(21,163,122,.16)}
+  .wl-error{color:#b3402e;font-size:13px;margin-bottom:12px}
+  .wl-tick{width:54px;height:54px;border-radius:50%;background:rgba(21,163,122,.14);color:var(--jade-deep);font-size:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+
+  @media (max-width:880px){.saved-grid{grid-template-columns:1fr}.calc .result{gap:24px}}
+
+  @media (max-width:880px){
+    .hero-grid,.bespoke-inner{grid-template-columns:1fr}
+    .features,.price-grid{grid-template-columns:1fr}
+    .card.featured{transform:none}
+    .nav-links{display:none}
+    .hero{padding:48px 0 24px}
+    section{padding:64px 0}
+    .bespoke-inner{padding:40px 28px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="brand"><span class="dot"></span>Clera</div>
+      <div class="nav-links">
+        <a href="#how">Product</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#bespoke">Bespoke</a>
+      </div>
+      <div class="nav-cta">
+        <a href="#pricing" class="nav-links" style="display:inline;font-weight:500;color:var(--muted)">Sign in</a>
+        <a href="#pricing" class="btn btn-primary">Start free</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">CRM for UK accountancy practices</span>
+        <h1>It <span class="accent">chases your clients</span> for you.</h1>
+        <p class="lead">The client records never come in on time. Clera follows up automatically — politely, persistently — and shows you exactly who's still outstanding before every deadline.</p>
+        <div class="hero-cta">
+          <a href="#pricing" class="btn btn-primary">Start free</a>
+          <a href="#bespoke" class="btn btn-ghost">Book a demo</a>
+        </div>
+        <p class="hero-note">No card needed · Free plan stays free · Set up in an afternoon</p>
+      </div>
+
+      <!-- SIGNATURE: live chasing panel -->
+      <div class="panel" id="panel" aria-label="Outstanding client documents, updating as Clera chases them">
+        <div class="panel-head">
+          <span class="title">Outstanding · Jan deadlines</span>
+          <span class="count"><b id="outCount">11</b> → <i>cleared</i></span>
+        </div>
+        <div class="rows" id="rows">
+          <div class="row" data-state="chasing">
+            <div><div class="who">Marshall &amp; Co</div><div class="what">VAT records · Q3</div></div>
+            <span class="chip chasing">Chasing</span>
+          </div>
+          <div class="row" data-state="outstanding">
+            <div><div class="who">R. Okafor Ltd</div><div class="what">Bank statements</div></div>
+            <span class="chip outstanding">Outstanding</span>
+          </div>
+          <div class="row" data-state="chasing">
+            <div><div class="who">Thread Studio</div><div class="what">Expense receipts</div></div>
+            <span class="chip chasing">Chasing</span>
+          </div>
+          <div class="row" data-state="outstanding">
+            <div><div class="who">Halpern Joinery</div><div class="what">Payroll figures</div></div>
+            <span class="chip outstanding">Outstanding</span>
+          </div>
+          <div class="row" data-state="received">
+            <div><div class="who">Verena Lett</div><div class="what">Self-assessment docs</div></div>
+            <span class="chip received">Received</span>
+          </div>
+        </div>
+        <div class="panel-foot">
+          <span class="pulse"></span>
+          <span id="footMsg">Clera sent 3 follow-ups this morning</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<div class="trust">
+  <div class="wrap">
+    <span>Built for UK practices</span><span class="sep">/</span>
+    <span>GDPR-ready</span><span class="sep">/</span>
+    <span>Cyber Essentials</span><span class="sep">/</span>
+    <span>Your data, UK-hosted</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">What Clera does</span>
+      <h2>A CRM that does the admin you keep putting off.</h2>
+      <p>Everything a small practice needs to track clients and deadlines — with an AI layer aimed squarely at the work you hate doing.</p>
+    </div>
+    <div class="features">
+      <div class="feat">
+        <span class="num">01</span>
+        <h3>The chasing engine</h3>
+        <p>Request documents once. Clera follows up on a schedule, in your tone, until they land — then marks the client received and lets you know.</p>
+      </div>
+      <div class="feat">
+        <span class="num">02</span>
+        <h3>Ask in plain English</h3>
+        <p>"What's outstanding for Marshall &amp; Co?" "Who's missing records before the 31st?" Get the answer instantly — no digging through tabs.</p>
+      </div>
+      <div class="feat">
+        <span class="num">03</span>
+        <h3>Clients &amp; deadlines, sorted</h3>
+        <p>Every client, job and due date in one clean place. See the whole practice at a glance and never miss a filing again.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIME SAVED -->
+<section id="saved">
+  <div class="wrap">
+    <div class="saved-grid">
+      <div class="saved-copy">
+        <span class="eyebrow">The cost of chasing</span>
+        <h2>Get your week back.</h2>
+        <p>Chasing clients for records is the job nobody in the practice wants — and it quietly eats hours every week. Clera takes it off your desk. See what that's worth to you.</p>
+      </div>
+      <div class="calc" aria-label="Chasing time savings calculator">
+        <div class="field">
+          <label for="clients">Clients you chase a month <span id="vClients">30</span></label>
+          <input type="range" id="clients" min="5" max="150" value="30" step="5">
+        </div>
+        <div class="field">
+          <label for="mins">Minutes spent on each <span id="vMins">15 min</span></label>
+          <input type="range" id="mins" min="5" max="45" value="15" step="5">
+        </div>
+        <div class="field">
+          <label for="rate">Your time, per hour <span id="vRate">£40</span></label>
+          <input type="range" id="rate" min="20" max="120" value="40" step="5">
+        </div>
+        <div class="result">
+          <div><div class="big" id="outHours">—</div><div class="lbl">hours saved / month</div></div>
+          <div><div class="big" id="outMoney">—</div><div class="lbl">value / month</div></div>
+        </div>
+        <div class="payoff" id="payoff"></div>
+        <div class="assume">Assumes Clera automates ~80% of routine chasing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO PLACEHOLDER — replace the .placeholder block below with your Loom embed when ready -->
+<section id="watch" style="padding-top:0">
+  <div class="wrap">
+    <div class="placeholder">
+      <span class="eyebrow">See it in action</span>
+      <p>Your walkthrough video goes here — paste your Loom embed in place of this block.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Pricing</span>
+      <h2>One product. Priced by the size of your practice.</h2>
+      <p>No crippled cheap plan — every paid tier gets the full Clera. You only pay more as your firm grows.</p>
+    </div>
+    <div class="price-grid">
+
+      <div class="card">
+        <h3>Free</h3>
+        <div class="who">Trying it out</div>
+        <div class="price">£0</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#15A37A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Core CRM, up to 50 clients</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#15A37A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Deadline tracking</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#15A37A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>1 user</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Start free</a>
+      </div>
+
+      <div class="card featured">
+        <span class="badge">Most popular</span>
+        <h3>Firm</h3>
+        <div class="who">Multi-staff practices</div>
+        <div class="price">£99<small> /mo</small></div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#7FD9BC" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Solo</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#7FD9BC" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Up to 10 users, unlimited clients</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#7FD9BC" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Higher AI fair-use allowance</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#7FD9BC" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Start free trial</a>
+      </div>
+
+      <div class="card">
+        <h3>Solo</h3>
+        <div class="who">Sole practitioners &amp; bookkeepers</div>
+        <div class="price">£49<small> /mo</small></div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#15A37A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Full CRM &amp; deadline tracking</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#15A37A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>The chasing engine + smart search</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#15A37A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Up to 2 users</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#15A37A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Fair-use AI allowance</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Start free</a>
+      </div>
+
+    </div>
+    <p class="annual">Pay yearly and get two months free — £490 Solo · £990 Firm. AI usage beyond fair-use billed per action.</p>
+  </div>
+</section>
+
+<!-- BESPOKE -->
+<section id="bespoke">
+  <div class="wrap">
+    <div class="bespoke-inner">
+      <div>
+        <span class="eyebrow">Bespoke builds</span>
+        <h2>Want something built around your exact practice?</h2>
+        <p>For larger firms that need a system shaped to their own workflow, we build it custom — with the AI models that fit your needs, fully owned by you.</p>
+        <a href="#" class="btn btn-primary">Book a free consultation</a>
+      </div>
+      <div class="bespoke-list">
+        <div class="item"><span class="k">Consult</span><span class="v"><b>Free scoping call</b> to map exactly what your firm needs.</span></div>
+        <div class="item"><span class="k">Build</span><span class="v"><b>One-off fee from £6,000.</b> You own the finished system.</span></div>
+        <div class="item"><span class="k">Run</span><span class="v"><b>Optional maintenance</b> for updates and fixes — or pay as you go.</span></div>
+        <div class="item"><span class="k">AI</span><span class="v">Your own models and keys, so AI usage stays <b>fully in your control</b>.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS PLACEHOLDER — drop real pilot quotes in here when you have them -->
+<section id="testimonials" style="padding-bottom:0">
+  <div class="wrap">
+    <div class="placeholder">
+      <span class="eyebrow">Trusted by practices</span>
+      <p>Testimonials from your first pilot firms go here — one real quote will do more than any design. Add them once your pilots are live.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head" style="text-align:center;margin-left:auto;margin-right:auto;max-width:60ch">
+      <span class="eyebrow">Questions</span>
+      <h2>Everything you're probably wondering.</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Is my client data secure? <span class="ic">+</span></summary>
+        <div class="a">Yes. Your data is hosted in the UK and handled in line with GDPR, and we build to Cyber Essentials standards. Your clients' financial information stays private to your practice.</div>
+      </details>
+      <details>
+        <summary>Can I bring my existing clients across? <span class="ic">+</span></summary>
+        <div class="a">Yes — import your client list from a spreadsheet in a few minutes. No need to retype anything or start from scratch.</div>
+      </details>
+      <details>
+        <summary>Do my clients have to download or log into anything? <span class="ic">+</span></summary>
+        <div class="a">No. They get a simple email with a secure link to send their documents. No app, no account, no friction — which is exactly why they actually respond.</div>
+      </details>
+      <details>
+        <summary>Does the free plan really stay free? <span class="ic">+</span></summary>
+        <div class="a">It does. The free plan covers the core CRM and deadline tracking for up to 50 clients, with no time limit. The AI features — including the chasing engine — are on the Solo and Firm plans.</div>
+      </details>
+      <details>
+        <summary>What if I use more AI than my plan includes? <span class="ic">+</span></summary>
+        <div class="a">Your plan's fair-use allowance covers normal day-to-day use. Beyond that, extra usage is billed per action at a small rate, and you can always see where you are — no surprise bills.</div>
+      </details>
+      <details>
+        <summary>Can Clera be tailored to how my firm works? <span class="ic">+</span></summary>
+        <div class="a">Most practices run happily on the standard product. Larger firms that need something shaped to their exact workflow can commission a bespoke build — start with a free consultation.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="wrap">
+    <span class="eyebrow">Get started</span>
+    <h2>Stop chasing. Start filing on time.</h2>
+    <p>Set up your practice in an afternoon. Free to start, no card needed.</p>
+    <div class="hero-cta">
+      <a href="#pricing" class="btn btn-primary">Start free</a>
+      <a href="#bespoke" class="btn btn-ghost">Talk to us</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>Clera</div>
+    <div class="fnote">© 2026 Clera · Built for UK accountancy practices · Manchester</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#rows .row'));
+  var outCountEl = document.getElementById('outCount');
+  var footMsg = document.getElementById('footMsg');
+  var messages = [
+    'Clera sent 3 follow-ups this morning',
+    'Reminder sent to Halpern Joinery',
+    'Bank statements just landed from R. Okafor',
+    'Clera is chasing 2 clients now'
+  ];
+  var mi = 0;
+
+  function setChip(row, state, label){
+    var chip = row.querySelector('.chip');
+    chip.className = 'chip ' + state;
+    chip.textContent = label;
+    row.dataset.state = state;
+  }
+  function countOutstanding(){
+    return rows.filter(function(r){ return r.dataset.state !== 'received'; }).length + 6;
+  }
+  function flash(row){
+    row.classList.add('flash');
+    setTimeout(function(){ row.classList.remove('flash'); }, 1100);
+  }
+
+  outCountEl.textContent = countOutstanding();
+
+  var step = 0;
+  setInterval(function(){
+    step++;
+    // rotate the footer message
+    mi = (mi + 1) % messages.length;
+    footMsg.textContent = messages[mi];
+
+    // progress one row through outstanding -> chasing -> received
+    var target;
+    if (step % 3 === 1){
+      target = rows.find(function(r){ return r.dataset.state === 'outstanding'; });
+      if (target){ setChip(target, 'chasing', 'Chasing'); flash(target); }
+    } else if (step % 3 === 2){
+      target = rows.find(function(r){ return r.dataset.state === 'chasing'; });
+      if (target){ setChip(target, 'received', 'Received'); flash(target); }
+    } else {
+      // reset cycle so it loops gently
+      var received = rows.filter(function(r){ return r.dataset.state === 'received'; });
+      if (received.length > 2){
+        setChip(received[0], 'outstanding', 'Outstanding');
+        setChip(received[1], 'outstanding', 'Outstanding');
+      }
+    }
+    outCountEl.textContent = countOutstanding();
+  }, 2200);
+})();
+</script>
+
+<!-- WAITLIST MODAL -->
+<div class="modal-overlay" id="waitlistModal" role="dialog" aria-modal="true" aria-labelledby="wlTitle" hidden>
+  <div class="modal-card">
+    <button class="modal-close" id="wlClose" aria-label="Close">&times;</button>
+    <div id="wlForm">
+      <span class="eyebrow">Early access</span>
+      <h3 id="wlTitle">Be first in when Clera opens.</h3>
+      <p class="modal-sub">Join the waitlist — founding firms lock in launch pricing. No spam, just one email when we're live.</p>
+      <div class="modal-field">
+        <label for="wlEmail">Work email</label>
+        <input type="email" id="wlEmail" placeholder="you@yourpractice.co.uk" autocomplete="email" required>
+      </div>
+      <div class="modal-field">
+        <label for="wlFirm">Practice name <span class="opt">(optional)</span></label>
+        <input type="text" id="wlFirm" placeholder="Smith &amp; Co Accountants" autocomplete="organization">
+      </div>
+      <div class="modal-field">
+        <label for="wlSeg">You are a…</label>
+        <select id="wlSeg">
+          <option value="sole">Sole practitioner / bookkeeper</option>
+          <option value="small">Small firm (2–5 staff)</option>
+          <option value="firm">Larger firm (6+ staff)</option>
+        </select>
+      </div>
+      <p class="wl-error" id="wlError" hidden></p>
+      <button type="button" class="btn btn-primary" id="wlSubmit" style="width:100%;justify-content:center;margin-top:4px">Join the waitlist</button>
+    </div>
+    <div id="wlSuccess" hidden style="text-align:center;padding:10px 0">
+      <div class="wl-tick">✓</div>
+      <h3>You're on the list.</h3>
+      <p class="modal-sub" style="margin:0">We'll email you the moment Clera opens — founding-firm pricing locked in.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var c=document.getElementById('clients'),m=document.getElementById('mins'),r=document.getElementById('rate');
+  if(!c) return;
+  var vC=document.getElementById('vClients'),vM=document.getElementById('vMins'),vR=document.getElementById('vRate');
+  var oH=document.getElementById('outHours'),oM=document.getElementById('outMoney'),pf=document.getElementById('payoff');
+  function calc(){
+    var clients=+c.value, mins=+m.value, rate=+r.value;
+    vC.textContent=clients; vM.textContent=mins+' min'; vR.textContent='£'+rate;
+    var hours=clients*mins/60*0.8;
+    var money=hours*rate;
+    oH.textContent=hours.toFixed(1);
+    oM.textContent='£'+Math.round(money).toLocaleString();
+    var times=money/99;
+    pf.textContent = times>=1
+      ? 'That covers the £99 Firm plan '+times.toFixed(1)+'× over — every month.'
+      : 'And Clera handles it from £49 a month.';
+  }
+  [c,m,r].forEach(function(el){el.addEventListener('input',calc)});
+  calc();
+})();
+</script>
+
+<script>
+(function(){
+  /* ===== PASTE YOUR SUPABASE DETAILS HERE TO GO LIVE ===== */
+  var SUPABASE_URL = 'https://vhkzpzebsnlworotwyfg.supabase.co/rest/v1/';        // e.g. https://abcd1234.supabase.co
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoa3pwemVic25sd29yb3R3eWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDI2NDgsImV4cCI6MjA5Nzk3ODY0OH0.HRrYLfzTs6afl--CO6zRrY4oXl4hrkYSsE317F5OJUM';
+  /* ======================================================= */
+
+  var modal=document.getElementById('waitlistModal');
+  if(!modal) return;
+  var closeBtn=document.getElementById('wlClose');
+  var submit=document.getElementById('wlSubmit');
+  var emailEl=document.getElementById('wlEmail');
+  var firmEl=document.getElementById('wlFirm');
+  var segEl=document.getElementById('wlSeg');
+  var errEl=document.getElementById('wlError');
+  var formView=document.getElementById('wlForm');
+  var successView=document.getElementById('wlSuccess');
+  var lastFocus=null;
+
+  function open(e){ if(e) e.preventDefault(); lastFocus=document.activeElement; modal.hidden=false;
+    requestAnimationFrame(function(){ modal.classList.add('open'); }); setTimeout(function(){ emailEl.focus(); },70); }
+  function close(){ modal.classList.remove('open'); setTimeout(function(){ modal.hidden=true; reset(); },200); if(lastFocus) lastFocus.focus(); }
+  function reset(){ formView.hidden=false; successView.hidden=true; errEl.hidden=true; submit.disabled=false; submit.textContent='Join the waitlist'; }
+  function win(){ formView.hidden=true; successView.hidden=false; }
+
+  // every call-to-action button opens the waitlist
+  document.querySelectorAll('a.btn').forEach(function(b){ b.addEventListener('click', open); });
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', function(e){ if(e.target===modal) close(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !modal.hidden) close(); });
+
+  function validEmail(em){ return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em); }
+
+  submit.addEventListener('click', function(){
+    var email=emailEl.value.trim();
+    errEl.hidden=true;
+    if(!validEmail(email)){ errEl.textContent='Please enter a valid email address.'; errEl.hidden=false; emailEl.focus(); return; }
+    submit.disabled=true; submit.textContent='Joining…';
+    var payload={ email:email, firm_name:firmEl.value.trim()||null, segment:segEl.value };
+
+    // Demo mode — if keys aren't set yet, show success so you can preview the flow (nothing is saved)
+    if(SUPABASE_URL.indexOf('YOUR_')===0 || SUPABASE_ANON_KEY.indexOf('YOUR_')===0){
+      console.warn('[Clera] Supabase keys not set — demo mode, email not saved.');
+      return win();
+    }
+
+    fetch(SUPABASE_URL+'/rest/v1/waitlist', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_ANON_KEY,
+        'Authorization':'Bearer '+SUPABASE_ANON_KEY, 'Prefer':'return=minimal' },
+      body:JSON.stringify(payload)
+    }).then(function(res){
+      if(res.ok || res.status===409){ win(); }       // 409 = already on the list, still a win
+      else { throw new Error('HTTP '+res.status); }
+    }).catch(function(err){
+      console.error(err);
+      errEl.textContent='Something went wrong — please try again in a moment.'; errEl.hidden=false;
+      submit.disabled=false; submit.textContent='Join the waitlist';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
