@@ -1,0 +1,10 @@
+# Supabase project config for Clera.
+# `project_id` is a local label used by the Supabase CLI; it does not have to
+# match your hosted project ref. Link to the hosted project with:
+#   supabase link --project-ref vhkzpzebsnlworotwyfg
+project_id = "clera"
+
+[functions.ai-chase]
+# The CRM calls this while the user is signed in, so their JWT is sent
+# automatically and JWT verification stays on (the default).
+verify_jwt = true
