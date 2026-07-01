@@ -10,6 +10,24 @@
 --   crm_state     — the whole CRM state for a firm, as one JSONB document
 --
 -- Apply with:  supabase db push   (or paste into the dashboard SQL editor)
+-- Safe to run more than once.
+
+-- ---------------------------------------------------------------------------
+-- Clean up the earlier (pre-firm) draft of this migration if it was applied.
+-- The first version used a user-scoped crm_state and a waitlist table; drop
+-- them so the firm-scoped schema below can be created. No-op on a fresh DB and
+-- on a DB that already has the firm-scoped schema.
+-- ---------------------------------------------------------------------------
+drop table if exists public.waitlist cascade;
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'crm_state' and column_name = 'user_id'
+  ) then
+    drop table public.crm_state cascade;
+  end if;
+end $$;
 
 -- ---------------------------------------------------------------------------
 -- Tables
