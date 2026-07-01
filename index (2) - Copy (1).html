@@ -378,7 +378,7 @@
       <button data-view="onboarding"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 5 5.6.6-4 4 1 5.4L12 19l-5 3 1-5.4-4-4 5.6-.6z"/></svg>Onboarding</button>
       <button data-view="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 00-1.7-1l-.4-2.5H9.6L9.2 5a7 7 0 00-1.7 1l-2.4-1-2 3.4 2 1.6a7 7 0 000 2l-2 1.6 2 3.4 2.4-1a7 7 0 001.7 1l.4 2.5h4.8l.4-2.5a7 7 0 001.7-1l2.4 1 2-3.4-2-1.6a7 7 0 00.1-1z"/></svg>Settings</button>
     </nav>
-    <div class="side-foot">Practice CRM · v2<br>AI layer coming soon</div>
+    <div class="side-foot">Practice CRM · v3<br>Shared &amp; AI-powered</div>
   </aside>
 
   <main class="main">
@@ -1044,7 +1044,7 @@ function viewOnboarding(){
   const list=store.onboarding();
   $('#view').innerHTML=`
     <div class="agent-card"><div>
-      <span class="agent-badge">AI Onboarding Agent · coming with the AI layer</span>
+      <span class="agent-badge">AI Onboarding Agent</span>
       <h2>New clients, onboarded on autopilot.</h2>
       <p>Every new client runs through the same setup. The agent will auto-draft the engagement letter, collect AML/ID and authorisations, and chase anything missing — so clients are live in days, not weeks, and you barely lift a finger.</p>
     </div><button class="btn btn-primary" onclick="startOnboarding()">Start onboarding</button></div>
@@ -1064,6 +1064,12 @@ function toggleStep(id,i){const o=store.onboarding().find(x=>x.id===id);o.steps[
 async function runAgent(onbId){
   const o=store.onboarding().find(x=>x.id===onbId);if(!o)return;
   const c=store.client(o.clientId);
+  // Have the agent open with a short, real plan for this specific client.
+  const plan=await aiGenerate(
+    'You are Clera\'s onboarding agent at a UK accountancy practice. In one or two sentences, say how you will onboard the new client "'+(c?c.name:'this client')+'"'+(c&&c.type?' (a '+c.type+')':'')+' — engagement letter, AML/ID, agent authorisation, software access, first document request and a welcome call. Be specific and reassuring. No preamble.',
+    'Kicking off onboarding: engagement letter out, AML/ID and 64-8 authorisation underway, software access set up, first documents requested and a welcome call booked.');
+  o.log=o.log||[];o.log.unshift({date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'}),text:'🤖 '+plan});
+  render();
   for(let i=0;i<o.steps.length;i++){
     if(o.steps[i].done)continue;
     const el=$('#onb-'+onbId+'-'+i);if(el)el.classList.add('working');
@@ -1095,27 +1101,14 @@ function startOnboarding(){
     <div class="modal-foot"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-primary btn-sm" onclick="createOnb()">Start</button></div>`);
 }
 function createOnb(){const cid=$('#o_client').value;store.add('onboarding',{clientId:cid,started:todayISO(),steps:ONB_STEPS.map(s=>({label:s,done:false}))});toast('Onboarding started');closeModal();render();}
-function aiDraft(cid){
-  const c=store.client(cid);
-  openModal('Welcome email — AI draft',`<div class="ai-note">AI draft (template for now) — connect the AI layer to personalise automatically per client.</div>
-    <textarea readonly style="width:100%;height:240px;padding:12px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;line-height:1.6;background:var(--paper);resize:vertical">Subject: Welcome to ${store.state.practice.name}
-
-Hi ${c?c.contact:'there'},
-
-Welcome aboard — we're delighted to be looking after ${c?c.name:'your business'}.
-
-To get you set up, we'll need a few things over the next week:
- • Proof of ID for AML verification
- • Signed engagement letter (attached)
- • Access to your bookkeeping software
-
-We'll chase anything outstanding so nothing slips — you won't need to remember a thing.
-
-Any questions, just reply to this email.
-
-Best regards,
-${store.state.practice.name}</textarea>
-    <div class="modal-foot"><button class="btn btn-primary btn-sm" onclick="closeModal();toast('Draft ready to send')">Looks good</button></div>`);
+async function aiDraft(cid){
+  const c=store.client(cid);const practice=store.state.practice.name;
+  openModal('Welcome email — AI draft',`<div class="ai-note">Clera is personalising a welcome email for ${c?c.name:'this client'}…</div><div id="draftBox" class="draft-box"><span class="dots"><i></i><i></i><i></i></span></div><div class="modal-foot"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Close</button><button class="btn btn-primary btn-sm" onclick="closeModal();toast('Draft ready to send')">Looks good</button></div>`);
+  const svc=(c&&c.services&&c.services.length)?c.services.join(', '):'general accountancy';
+  const fb='Subject: Welcome to '+practice+'\n\nHi '+(c?c.contact:'there')+',\n\nWelcome aboard — we\'re delighted to be looking after '+(c?c.name:'your business')+'.\n\nTo get you set up, we\'ll need a few things over the next week:\n • Proof of ID for AML verification\n • Signed engagement letter (attached)\n • Access to your bookkeeping software\n\nWe\'ll chase anything outstanding so nothing slips.\n\nBest regards,\n'+practice;
+  const prompt='Write a warm, professional welcome email from the UK accountancy practice "'+practice+'" to a new client. Client: '+(c?c.name:'the client')+', main contact: '+(c?c.contact:'there')+', services: '+svc+'. Politely ask them to (1) send proof of ID for AML verification, (2) sign the attached engagement letter, and (3) give access to their bookkeeping software over the next week. Reassure them the practice will chase anything outstanding so nothing slips. Keep it short, British English, and include a Subject line. Return only the email.';
+  const msg=await aiGenerate(prompt,fb);
+  const box=$('#draftBox');if(box){box.className='draft-box ready';const ta=document.createElement('textarea');ta.style.cssText='width:100%;height:240px;border:none;background:transparent;resize:vertical;font:inherit;color:inherit;line-height:1.6';ta.value=msg;box.innerHTML='';box.appendChild(ta);}
 }
 
 /* SETTINGS */
@@ -1125,11 +1118,38 @@ function viewSettings(){
       <div class="panel-body" style="padding:20px"><div class="field"><label>Practice name</label><input id="pName" value="${store.state.practice.name}"></div>
       <button class="btn btn-primary btn-sm" onclick="store.state.practice.name=$('#pName').value;toast('Saved');render()">Save</button>
       <button class="btn btn-ghost btn-sm" onclick="signOut()" style="margin-left:8px">Sign out</button></div></div>
+    <div class="panel full" style="max-width:640px"><div class="panel-head"><h2>Team</h2></div>
+      <div class="panel-body" style="padding:20px" id="teamBody"><span class="dots"><i></i><i></i><i></i></span></div></div>
     <div class="panel full" style="max-width:640px"><div class="panel-head"><h2>Backup & data</h2></div>
-      <div class="panel-body" style="padding:20px"><p style="font-size:14px;color:var(--muted);margin-bottom:16px">Your data lives in this browser session. Export a backup to keep it safe — live auto-save arrives with the Supabase-connected version.</p>
+      <div class="panel-body" style="padding:20px"><p style="font-size:14px;color:var(--muted);margin-bottom:16px">${window.sb&&currentFirm?'Your data auto-saves to your firm\'s shared workspace and syncs to every member in real time.':'Running in local demo mode — data lives in this browser session only.'} Export a backup any time.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="exportData()">Export backup (JSON)</button>
       <label class="btn btn-ghost btn-sm" style="cursor:pointer">Import backup<input type="file" accept="application/json" style="display:none" onchange="importData(event)"></label>
-      <button class="btn btn-ghost btn-sm" onclick="if(confirm('Reset to sample data?')){store.state=seed();toast('Reset');render()}">Reset sample data</button></div></div></div>`;
+      <button class="btn btn-ghost btn-sm" onclick="if(confirm('Reset to sample data?')){store.state=seed();scheduleSave&&scheduleSave();toast('Reset');render()}">Reset sample data</button></div></div></div>`;
+  loadTeam();
+}
+async function loadTeam(){
+  const body=$('#teamBody');if(!body)return;
+  if(!window.sb||!currentFirm){body.innerHTML='<p style="font-size:14px;color:var(--muted)">Team sharing is available once the app is connected to Supabase. Then everyone you invite shares this firm\'s clients, deadlines and documents.</p>';return;}
+  try{
+    const [rosterRes,invRes]=await Promise.all([sb.rpc('firm_roster'),sb.rpc('pending_invites')]);
+    const roster=rosterRes.data||[],invites=invRes.data||[];
+    const me=roster.find(r=>r.is_you)||{};const canInvite=me.role==='owner'||me.role==='admin';
+    const roleChip=r=>'<span class="chip '+(r==='owner'?'green':r==='admin'?'blue':'grey')+'">'+r+'</span>';
+    let html='<div style="display:flex;flex-direction:column;gap:2px;margin-bottom:6px">'+roster.map(r=>
+      '<div class="row"><div><div class="who">'+r.email+(r.is_you?' <span style="color:var(--muted);font-weight:400">(you)</span>':'')+'</div></div><div class="right">'+roleChip(r.role)+'</div></div>').join('')+'</div>';
+    invites.forEach(i=>{html+='<div class="row"><div><div class="who" style="color:var(--muted)">'+i.email+'</div><div class="meta">invite pending</div></div><div class="right">'+roleChip(i.role)+'</div></div>';});
+    if(canInvite){
+      html+='<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px"><div class="field" style="margin-bottom:10px"><label>Invite a colleague</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="inviteEmail" type="email" placeholder="colleague@yourpractice.co.uk" style="flex:1;min-width:200px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:var(--paper)"><select id="inviteRole" style="padding:11px 13px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:var(--paper)"><option value="staff">Staff</option><option value="admin">Admin</option></select><button class="btn btn-primary btn-sm" onclick="inviteMember()">Invite</button></div></div><p style="font-size:12px;color:var(--muted)">They join automatically the first time they create an account with that email.</p></div>';
+    }
+    body.innerHTML=html;
+  }catch(e){console.error(e);body.innerHTML='<p style="font-size:14px;color:var(--muted)">Could not load the team.</p>';}
+}
+async function inviteMember(){
+  const email=($('#inviteEmail').value||'').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return toast('Enter a valid email');
+  const {error}=await sb.rpc('invite_member',{p_email:email,p_role:$('#inviteRole').value});
+  if(error){toast(error.message||'Invite failed');return;}
+  toast('Invited '+email);loadTeam();
 }
 function exportData(){const blob=new Blob([JSON.stringify(store.state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='clera-backup-'+todayISO()+'.json';a.click();toast('Backup downloaded');}
 function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{store.state=JSON.parse(r.result);toast('Backup restored');render();}catch(err){toast('Could not read file');}};r.readAsText(f);}
@@ -1185,18 +1205,38 @@ function formTask(){openModal('New task',`<div class="field"><label>Task</label>
 function saveTask(){const title=$('#k_title').value.trim();if(!title)return toast('Task is required');store.add('tasks',{title,due:$('#k_due').value,done:false});toast('Task added');closeModal();render();}
 
 /* ===== SUPABASE BACKEND ===== */
-/* Reuse the SAME project as your waitlist. Paste the two values below. */
+/* Your Supabase project URL + anon key (safe to ship — RLS protects the data). */
 const SB_URL='https://vhkzpzebsnlworotwyfg.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoa3pwemVic25sd29yb3R3eWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDI2NDgsImV4cCI6MjA5Nzk3ODY0OH0.HRrYLfzTs6afl--CO6zRrY4oXl4hrkYSsE317F5OJUM';
 const configured=()=>SB_URL.indexOf('YOUR_')!==0 && SB_KEY.indexOf('YOUR_')!==0;
-window.sb=null;let currentUser=null,saveTimer=null;
+window.sb=null;let currentUser=null,currentFirm=null,saveTimer=null,firmChannel=null;
+
+// Resolve the signed-in user to their firm (creating one, or joining via an
+// invite, as needed). Everyone in the same firm shares one CRM dataset.
+async function resolveFirm(){
+  const {data,error}=await sb.rpc('bootstrap_firm');
+  if(error){console.error('firm resolve failed',error);throw error;}
+  currentFirm=data;
+}
+// Live sync: when a colleague saves, pull their changes in.
+function subscribeFirm(){
+  if(!sb||!currentFirm||!window.supabase)return;
+  if(firmChannel)sb.removeChannel(firmChannel);
+  firmChannel=sb.channel('crm_state_'+currentFirm)
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'crm_state',filter:'firm_id=eq.'+currentFirm},function(payload){
+      const row=payload.new;if(!row||!row.state||!row.state.clients)return;
+      if(row.updated_by===currentUser.id)return;   // ignore our own save
+      store.state=row.state;normalize();render();
+      toast('Updated by a colleague');
+    }).subscribe();
+}
 
 function normalize(){store.leads().forEach(l=>{if(l.score==null)l.score=tempToScore(l.temp);});store.documents().forEach(d=>{if(!d.messages)d.messages=[];});store.clients().forEach(c=>{if(!c.activity)c.activity=[];});store.onboarding().forEach(o=>{if(!o.log)o.log=[];});}
-async function saveNow(){if(!sb||!currentUser)return;try{await sb.from('crm_state').upsert({user_id:currentUser.id,state:store.state,updated_at:new Date().toISOString()});}catch(e){console.error('save failed',e);}}
-function scheduleSave(){if(!sb||!currentUser)return;clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,800);}
+async function saveNow(){if(!sb||!currentUser||!currentFirm)return;try{await sb.from('crm_state').upsert({firm_id:currentFirm,state:store.state,updated_at:new Date().toISOString(),updated_by:currentUser.id});}catch(e){console.error('save failed',e);}}
+function scheduleSave(){if(!sb||!currentUser||!currentFirm)return;clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,800);}
 async function loadState(){
   try{
-    const {data}=await sb.from('crm_state').select('state').eq('user_id',currentUser.id).maybeSingle();
+    const {data}=await sb.from('crm_state').select('state').eq('firm_id',currentFirm).maybeSingle();
     if(data&&data.state&&data.state.clients)store.state=data.state;
     else{store.state=seed();await saveNow();}
   }catch(e){console.error(e);if(!store.state||!store.state.clients)store.state=seed();}
@@ -1209,16 +1249,16 @@ async function doAuth(mode){
   const {data,error}=mode==='up'?await sb.auth.signUp({email,password:pw}):await sb.auth.signInWithPassword({email,password:pw});
   if(error){err.textContent=error.message;err.hidden=false;return;}
   if(mode==='up'&&!data.session){err.textContent='Account created — check your email to confirm, then sign in.';err.hidden=false;return;}
-  currentUser=data.user;hideAuth();await loadState();bootApp();
+  currentUser=data.user;hideAuth();await resolveFirm();await loadState();bootApp();
 }
 async function signOut(){if(sb){await saveNow();await sb.auth.signOut();}location.reload();}
-function bootApp(){normalize();$('#todayDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});render();if(sb&&currentUser)setInterval(saveNow,6000);}
+function bootApp(){normalize();$('#todayDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});render();if(sb&&currentUser&&currentFirm)subscribeFirm();}
 async function init(){
   $('#todayDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(!configured()){bootApp();return;} // standalone/demo mode — no login, in-memory only
   sb=window.supabase.createClient(SB_URL,SB_KEY);
   const {data:{session}}=await sb.auth.getSession();
-  if(session){currentUser=session.user;hideAuth();await loadState();bootApp();}
+  if(session){currentUser=session.user;hideAuth();await resolveFirm();await loadState();bootApp();}
   else showAuth();
 }
 function logClientActivity(clientId,text){const c=store.client(clientId);if(!c)return;c.activity=c.activity||[];c.activity.unshift({date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'}),text});if(window.scheduleSave)scheduleSave();}

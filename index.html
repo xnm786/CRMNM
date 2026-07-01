@@ -599,41 +599,6 @@
 })();
 </script>
 
-<!-- WAITLIST MODAL -->
-<div class="modal-overlay" id="waitlistModal" role="dialog" aria-modal="true" aria-labelledby="wlTitle" hidden>
-  <div class="modal-card">
-    <button class="modal-close" id="wlClose" aria-label="Close">&times;</button>
-    <div id="wlForm">
-      <span class="eyebrow">Early access</span>
-      <h3 id="wlTitle">Be first in when Clera opens.</h3>
-      <p class="modal-sub">Join the waitlist — founding firms lock in launch pricing. No spam, just one email when we're live.</p>
-      <div class="modal-field">
-        <label for="wlEmail">Work email</label>
-        <input type="email" id="wlEmail" placeholder="you@yourpractice.co.uk" autocomplete="email" required>
-      </div>
-      <div class="modal-field">
-        <label for="wlFirm">Practice name <span class="opt">(optional)</span></label>
-        <input type="text" id="wlFirm" placeholder="Smith &amp; Co Accountants" autocomplete="organization">
-      </div>
-      <div class="modal-field">
-        <label for="wlSeg">You are a…</label>
-        <select id="wlSeg">
-          <option value="sole">Sole practitioner / bookkeeper</option>
-          <option value="small">Small firm (2–5 staff)</option>
-          <option value="firm">Larger firm (6+ staff)</option>
-        </select>
-      </div>
-      <p class="wl-error" id="wlError" hidden></p>
-      <button type="button" class="btn btn-primary" id="wlSubmit" style="width:100%;justify-content:center;margin-top:4px">Join the waitlist</button>
-    </div>
-    <div id="wlSuccess" hidden style="text-align:center;padding:10px 0">
-      <div class="wl-tick">✓</div>
-      <h3>You're on the list.</h3>
-      <p class="modal-sub" style="margin:0">We'll email you the moment Clera opens — founding-firm pricing locked in.</p>
-    </div>
-  </div>
-</div>
-
 <script>
 (function(){
   var c=document.getElementById('clients'),m=document.getElementById('mins'),r=document.getElementById('rate');
@@ -654,69 +619,6 @@
   }
   [c,m,r].forEach(function(el){el.addEventListener('input',calc)});
   calc();
-})();
-</script>
-
-<script>
-(function(){
-  /* ===== PASTE YOUR SUPABASE DETAILS HERE TO GO LIVE ===== */
-  var SUPABASE_URL = 'https://vhkzpzebsnlworotwyfg.supabase.co';        // e.g. https://abcd1234.supabase.co
-  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoa3pwemVic25sd29yb3R3eWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDI2NDgsImV4cCI6MjA5Nzk3ODY0OH0.HRrYLfzTs6afl--CO6zRrY4oXl4hrkYSsE317F5OJUM';
-  /* ======================================================= */
-
-  var modal=document.getElementById('waitlistModal');
-  if(!modal) return;
-  var closeBtn=document.getElementById('wlClose');
-  var submit=document.getElementById('wlSubmit');
-  var emailEl=document.getElementById('wlEmail');
-  var firmEl=document.getElementById('wlFirm');
-  var segEl=document.getElementById('wlSeg');
-  var errEl=document.getElementById('wlError');
-  var formView=document.getElementById('wlForm');
-  var successView=document.getElementById('wlSuccess');
-  var lastFocus=null;
-
-  function open(e){ if(e) e.preventDefault(); lastFocus=document.activeElement; modal.hidden=false;
-    requestAnimationFrame(function(){ modal.classList.add('open'); }); setTimeout(function(){ emailEl.focus(); },70); }
-  function close(){ modal.classList.remove('open'); setTimeout(function(){ modal.hidden=true; reset(); },200); if(lastFocus) lastFocus.focus(); }
-  function reset(){ formView.hidden=false; successView.hidden=true; errEl.hidden=true; submit.disabled=false; submit.textContent='Join the waitlist'; }
-  function win(){ formView.hidden=true; successView.hidden=false; }
-
-  // every call-to-action button opens the waitlist
-  document.querySelectorAll('a.btn').forEach(function(b){ b.addEventListener('click', open); });
-  closeBtn.addEventListener('click', close);
-  modal.addEventListener('click', function(e){ if(e.target===modal) close(); });
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !modal.hidden) close(); });
-
-  function validEmail(em){ return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em); }
-
-  submit.addEventListener('click', function(){
-    var email=emailEl.value.trim();
-    errEl.hidden=true;
-    if(!validEmail(email)){ errEl.textContent='Please enter a valid email address.'; errEl.hidden=false; emailEl.focus(); return; }
-    submit.disabled=true; submit.textContent='Joining…';
-    var payload={ email:email, firm_name:firmEl.value.trim()||null, segment:segEl.value };
-
-    // Demo mode — if keys aren't set yet, show success so you can preview the flow (nothing is saved)
-    if(SUPABASE_URL.indexOf('YOUR_')===0 || SUPABASE_ANON_KEY.indexOf('YOUR_')===0){
-      console.warn('[Clera] Supabase keys not set — demo mode, email not saved.');
-      return win();
-    }
-
-    fetch(SUPABASE_URL+'/rest/v1/waitlist', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_ANON_KEY,
-        'Authorization':'Bearer '+SUPABASE_ANON_KEY, 'Prefer':'return=minimal' },
-      body:JSON.stringify(payload)
-    }).then(function(res){
-      if(res.ok || res.status===409){ win(); }       // 409 = already on the list, still a win
-      else { throw new Error('HTTP '+res.status); }
-    }).catch(function(err){
-      console.error(err);
-      errEl.textContent='Something went wrong — please try again in a moment.'; errEl.hidden=false;
-      submit.disabled=false; submit.textContent='Join the waitlist';
-    });
-  });
 })();
 </script>
 
