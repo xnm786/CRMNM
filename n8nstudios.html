@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N8NSTUDIOS — Professionel Videograf &amp; Fotograf til Events og Bryllupper</title>
+<meta name="description" content="N8NSTUDIOS — professionel video- og fotoproduktion til bryllupper, events og private fester. Book en gratis konsultation i dag.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0d0d0f;
+    --charcoal:#17171a;
+    --surface:#1e1e22;
+    --gold:#c9a45c;
+    --gold-soft:#e6cf9b;
+    --cream:#f5f1e8;
+    --grey:#a3a3ab;
+    --line:rgba(201,164,92,.25);
+    --display:'Cormorant Garamond', serif;
+    --body:'Jost', sans-serif;
+    --maxw:1160px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    background:var(--black);
+    color:var(--cream);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  .eyebrow{
+    font-size:13px;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:500;
+  }
+  h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15}
+
+  .btn{
+    display:inline-block;
+    padding:15px 38px;
+    border:1px solid var(--gold);
+    color:var(--gold-soft);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:13px;
+    font-weight:500;
+    transition:background .25s,color .25s;
+    cursor:pointer;
+    background:transparent;
+  }
+  .btn:hover{background:var(--gold);color:var(--black)}
+  .btn-solid{background:var(--gold);color:var(--black)}
+  .btn-solid:hover{background:var(--gold-soft)}
+
+  /* ---------- header ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    background:rgba(13,13,15,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  .logo{
+    font-family:var(--display);
+    font-size:26px;
+    letter-spacing:.18em;
+    font-weight:700;
+    color:var(--cream);
+  }
+  .logo span{color:var(--gold)}
+  nav ul{display:flex;gap:34px;list-style:none}
+  nav a{
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--grey);transition:color .2s;
+  }
+  nav a:hover{color:var(--gold)}
+  @media(max-width:760px){nav ul{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;align-items:center;
+    position:relative;
+    background:
+      linear-gradient(rgba(13,13,15,.72),rgba(13,13,15,.88)),
+      radial-gradient(ellipse at 30% 20%, #2a2418 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 75%, #1c1a26 0%, transparent 50%),
+      var(--charcoal);
+    text-align:center;
+    padding:140px 0 90px;
+  }
+  .hero-inner{max-width:820px;margin:0 auto;padding:0 24px}
+  .hero h1{
+    font-size:clamp(44px,7vw,84px);
+    margin:22px 0 26px;
+    color:var(--cream);
+  }
+  .hero h1 em{font-style:italic;color:var(--gold-soft)}
+  .hero p{
+    font-size:19px;color:var(--grey);font-weight:300;
+    max-width:600px;margin:0 auto 42px;
+  }
+  .hero .btn-row{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+
+  /* ---------- sections ---------- */
+  section{padding:110px 0}
+  .sec-head{max-width:640px;margin:0 auto 64px;text-align:center}
+  .sec-head h2{font-size:clamp(32px,4.5vw,52px);margin-top:16px}
+  .sec-head p{color:var(--grey);margin-top:18px;font-weight:300;font-size:17px}
+
+  /* services */
+  .services{background:var(--charcoal)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:44px 34px;
+    transition:transform .25s,border-color .25s;
+  }
+  .card:hover{transform:translateY(-6px);border-color:var(--gold)}
+  .card .icon{font-size:34px;margin-bottom:20px}
+  .card h3{font-size:26px;margin-bottom:14px;color:var(--gold-soft)}
+  .card p{color:var(--grey);font-weight:300;font-size:15px}
+
+  /* portfolio */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .tile{
+    position:relative;aspect-ratio:4/3;overflow:hidden;
+    display:flex;align-items:flex-end;
+    border:1px solid var(--line);
+  }
+  .tile::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(160deg,#2b2519 0%,#141416 60%);
+    transition:transform .4s;
+  }
+  .tile:nth-child(2)::before{background:linear-gradient(200deg,#1f2430 0%,#121215 65%)}
+  .tile:nth-child(3)::before{background:linear-gradient(140deg,#2e2030 0%,#131316 60%)}
+  .tile:nth-child(4)::before{background:linear-gradient(220deg,#20302a 0%,#121214 60%)}
+  .tile:nth-child(5)::before{background:linear-gradient(150deg,#33261c 0%,#141415 60%)}
+  .tile:nth-child(6)::before{background:linear-gradient(190deg,#252033 0%,#121216 65%)}
+  .tile:hover::before{transform:scale(1.06)}
+  .tile .label{
+    position:relative;z-index:1;padding:22px;
+    width:100%;
+    background:linear-gradient(transparent,rgba(13,13,15,.9));
+  }
+  .tile .label h3{font-size:22px;color:var(--cream)}
+  .tile .label p{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-top:4px}
+
+  /* about */
+  .about{background:var(--charcoal)}
+  .about-flex{display:flex;gap:64px;align-items:center;flex-wrap:wrap}
+  .about-text{flex:1 1 420px}
+  .about-text h2{font-size:clamp(30px,4vw,46px);margin:16px 0 22px}
+  .about-text p{color:var(--grey);font-weight:300;margin-bottom:16px}
+  .stats{flex:1 1 320px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .stat{
+    border:1px solid var(--line);padding:34px 26px;text-align:center;background:var(--surface);
+  }
+  .stat b{font-family:var(--display);font-size:42px;color:var(--gold);display:block;font-weight:600}
+  .stat span{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey)}
+
+  /* ---------- form ---------- */
+  .consult{
+    background:
+      linear-gradient(rgba(13,13,15,.9),rgba(13,13,15,.94)),
+      radial-gradient(ellipse at 70% 10%, #2a2418 0%, transparent 55%),
+      var(--black);
+  }
+  .form-shell{
+    max-width:760px;margin:0 auto;
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:56px 48px;
+  }
+  @media(max-width:600px){.form-shell{padding:38px 22px}}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+  .field{display:flex;flex-direction:column;gap:8px}
+  .field.full{grid-column:1/-1}
+  label{
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--gold);font-weight:500;
+  }
+  label .req{color:#d97a6c}
+  input,select,textarea{
+    background:var(--charcoal);
+    border:1px solid rgba(245,241,232,.14);
+    color:var(--cream);
+    padding:14px 16px;
+    font-family:var(--body);
+    font-size:15px;
+    transition:border-color .2s;
+    width:100%;
+  }
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+  textarea{resize:vertical;min-height:110px}
+  .radio-row{display:flex;gap:14px;flex-wrap:wrap}
+  .radio-pill{position:relative}
+  .radio-pill input{position:absolute;opacity:0;inset:0;cursor:pointer}
+  .radio-pill span{
+    display:inline-block;padding:12px 24px;
+    border:1px solid rgba(245,241,232,.18);
+    font-size:14px;letter-spacing:.06em;color:var(--grey);
+    transition:all .2s;cursor:pointer;
+  }
+  .radio-pill input:checked + span{border-color:var(--gold);color:var(--gold-soft);background:rgba(201,164,92,.1)}
+  .submit-row{margin-top:34px;text-align:center}
+  .form-note{margin-top:18px;font-size:13px;color:var(--grey);text-align:center;font-weight:300}
+
+  /* footer */
+  footer{
+    border-top:1px solid var(--line);
+    padding:44px 0;text-align:center;color:var(--grey);font-size:14px;font-weight:300;
+  }
+  footer .logo{font-size:20px;margin-bottom:10px;display:inline-block}
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top">N8N<span>STUDIOS</span></a>
+    <nav>
+      <ul>
+        <li><a href="#ydelser">Ydelser</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#om">Om os</a></li>
+        <li><a href="#konsultation">Gratis konsultation</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-solid" href="#konsultation" style="padding:11px 24px">Book nu</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <p class="eyebrow">Videograf &amp; Fotograf — Bryllupper &amp; Events</p>
+    <h1>Vi forvandler jeres øjeblikke til <em>tidløse minder</em></h1>
+    <p>N8NSTUDIOS er et professionelt video- og fotostudie med speciale i bryllupper, events og private fester. Cinematisk kvalitet, personlig service og minder, der varer for evigt.</p>
+    <div class="btn-row">
+      <a class="btn btn-solid" href="#konsultation">Book gratis konsultation</a>
+      <a class="btn" href="#portfolio">Se vores arbejde</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="services" id="ydelser">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Vores ydelser</p>
+      <h2>Hvad vi tilbyder</h2>
+      <p>Fra den første forlovelse til den sidste dans — vi fanger hvert eneste øjeblik med professionelt udstyr og et kunstnerisk blik.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="icon">🎥</div>
+        <h3>Bryllupsvideo</h3>
+        <p>Cinematiske bryllupsfilm i 4K-kvalitet. Vi fortæller jeres kærlighedshistorie fra forberedelserne om morgenen til festen om aftenen — diskret og professionelt.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📸</div>
+        <h3>Bryllupsfoto</h3>
+        <p>Smukke og naturlige billeder af jeres store dag. Portrætter, detaljer og spontane øjeblikke, som I vil se tilbage på med glæde i mange år.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🎉</div>
+        <h3>Events &amp; Fester</h3>
+        <p>Fødselsdage, konfirmationer, firmafester og kulturelle arrangementer. Vi dækker jeres event i høj kvalitet — både foto og video.</p>
+      </div>
+      <div class="card">
+        <div class="icon">✨</div>
+        <h3>Highlight-film</h3>
+        <p>Korte, stemningsfulde highlight-videoer, der er perfekte til at dele med familie og venner på sociale medier.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PORTFOLIO ============ -->
+<section id="portfolio">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Portfolio</p>
+      <h2>Et udpluk af vores arbejde</h2>
+      <p>Hvert projekt er unikt. Her er nogle af de bryllupper og events, vi har haft æren af at forevige.</p>
+    </div>
+    <div class="grid">
+      <div class="tile"><div class="label"><h3>Sara &amp; Jonas</h3><p>Bryllup — København</p></div></div>
+      <div class="tile"><div class="label"><h3>Amira &amp; Yusuf</h3><p>Bryllup — Aarhus</p></div></div>
+      <div class="tile"><div class="label"><h3>Sommerfest 2025</h3><p>Firmaevent — Odense</p></div></div>
+      <div class="tile"><div class="label"><h3>Louise &amp; Mikkel</h3><p>Bryllup — Malmø</p></div></div>
+      <div class="tile"><div class="label"><h3>Fatimas 18-års</h3><p>Fødselsdag — København</p></div></div>
+      <div class="tile"><div class="label"><h3>Galla-aften</h3><p>Kulturelt event — Aalborg</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="about" id="om">
+  <div class="wrap about-flex">
+    <div class="about-text">
+      <p class="eyebrow">Om N8NSTUDIOS</p>
+      <h2>Passion for det perfekte øjeblik</h2>
+      <p>Hos N8NSTUDIOS tror vi på, at de bedste billeder og film opstår, når man føler sig tryg. Derfor arbejder vi diskret og personligt, så I kan være jer selv — mens vi fanger magien.</p>
+      <p>Vi arbejder med professionelt udstyr i topklasse, leverer i 4K og redigerer hvert projekt med kærlighed til detaljen. Uanset om det er et stort bryllup eller en intim fest, får I samme høje kvalitet.</p>
+      <p>Vi dækker hele Danmark og rejser gerne til udlandet.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>150+</b><span>Bryllupper</span></div>
+      <div class="stat"><b>300+</b><span>Events</span></div>
+      <div class="stat"><b>4K</b><span>Kvalitet</span></div>
+      <div class="stat"><b>100%</b><span>Tilfredshed</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONSULTATION FORM ============ -->
+<section class="consult" id="konsultation">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Gratis konsultation</p>
+      <h2>Fortæl os om jeres event</h2>
+      <p>Udfyld formularen, og vi kontakter jer inden for 24 timer med et uforpligtende tilbud. Konsultationen er 100% gratis.</p>
+    </div>
+
+    <div class="form-shell">
+      <form action="https://formsubmit.co/Nsvideo2002@hotmail.com" method="POST">
+        <!-- FormSubmit indstillinger -->
+        <input type="hidden" name="_subject" value="Ny konsultationsforespørgsel — N8NSTUDIOS">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="true">
+        <input type="text" name="_honey" style="display:none">
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="navn">Fulde navn <span class="req">*</span></label>
+            <input type="text" id="navn" name="Navn" placeholder="Jeres navn" required>
+          </div>
+
+          <div class="field">
+            <label for="email">E-mail <span class="req">*</span></label>
+            <input type="email" id="email" name="E-mail" placeholder="navn@email.dk" required>
+          </div>
+
+          <div class="field">
+            <label for="telefon">Telefonnummer <span class="req">*</span></label>
+            <input type="tel" id="telefon" name="Telefonnummer" placeholder="+45 12 34 56 78" pattern="[0-9+ ]{8,}" required>
+          </div>
+
+          <div class="field">
+            <label for="dato">Dato for eventet</label>
+            <input type="date" id="dato" name="Dato">
+          </div>
+
+          <div class="field">
+            <label for="lokation">Lokation (by/område) <span class="req">*</span></label>
+            <select id="lokation" name="Lokation" required>
+              <option value="" disabled selected>Vælg lokation</option>
+              <option>København &amp; omegn</option>
+              <option>Sjælland</option>
+              <option>Fyn</option>
+              <option>Jylland</option>
+              <option>Udlandet</option>
+              <option>Andet / ved ikke endnu</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="event">Type af event <span class="req">*</span></label>
+            <select id="event" name="Type af event" required>
+              <option value="" disabled selected>Vælg eventtype</option>
+              <option>Bryllup</option>
+              <option>Forlovelse / henna-aften</option>
+              <option>Fødselsdag</option>
+              <option>Konfirmation</option>
+              <option>Firmaevent</option>
+              <option>Koncert / kulturelt arrangement</option>
+              <option>Andet</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="venue">Venue / festlokale <span class="req">*</span></label>
+            <input type="text" id="venue" name="Venue" placeholder="Navn og adresse på venue (eller 'ved ikke endnu')" required>
+          </div>
+
+          <div class="field">
+            <label for="timer">Antal timers dækning <span class="req">*</span></label>
+            <select id="timer" name="Antal timer" required>
+              <option value="" disabled selected>Vælg antal timer</option>
+              <option>2-3 timer</option>
+              <option>4-5 timer</option>
+              <option>6-8 timer</option>
+              <option>Hele dagen (8+ timer)</option>
+              <option>Flere dage</option>
+              <option>Ved ikke endnu</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Foto eller video? <span class="req">*</span></label>
+            <div class="radio-row">
+              <label class="radio-pill">
+                <input type="radio" name="Foto eller video" value="Kun video" required>
+                <span>Kun video</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="Foto eller video" value="Kun foto">
+                <span>Kun foto</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="Foto eller video" value="Både foto og video">
+                <span>Begge dele</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label for="besked">Fortæl os mere (valgfrit)</label>
+            <textarea id="besked" name="Besked" placeholder="Fortæl os om jeres ønsker, antal gæster, særlige traditioner eller andet, vi bør vide..."></textarea>
+          </div>
+        </div>
+
+        <div class="submit-row">
+          <button type="submit" class="btn btn-solid" style="min-width:280px">Send forespørgsel</button>
+        </div>
+        <p class="form-note">Vi behandler jeres oplysninger fortroligt og kontakter jer inden for 24 timer.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <span class="logo">N8N<span style="color:var(--gold)">STUDIOS</span></span>
+    <p>Professionel videograf &amp; fotograf til bryllupper og events</p>
+    <p style="margin-top:8px">© 2026 N8NSTUDIOS — Alle rettigheder forbeholdes</p>
+  </div>
+</footer>
+
+</body>
+</html>
